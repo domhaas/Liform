@@ -67,11 +67,12 @@ abstract class AbstractTransformer implements TransformerInterface
      */
     protected function addCommonSpecs(FormInterface $form, array $schema, $extensions = [], $widget)
     {
-        $schema = $this->addLabel($form, $schema);
+        //$schema = $this->addLabel($form, $schema);
         $schema = $this->addAttr($form, $schema);
         $schema = $this->addPattern($form, $schema);
         $schema = $this->addDescription($form, $schema);
         $schema = $this->addWidget($form, $schema, $widget);
+        $schema = $this->addDependencies($form, $schema);
         $schema = $this->applyExtensions($extensions, $form, $schema);
 
         return $schema;
@@ -103,12 +104,12 @@ abstract class AbstractTransformer implements TransformerInterface
      */
     protected function addLabel(FormInterface $form, array $schema)
     {
-        $translationDomain = $form->getConfig()->getOption('translation_domain');
+        /*$translationDomain = $form->getConfig()->getOption('translation_domain');
         if ($label = $form->getConfig()->getOption('label')) {
-            $schema['title'] = $this->translator->trans($label, [], $translationDomain);
+            $schema['title'] = $label;//$this->translator->trans($label, [], $translationDomain);
         } else {
-            $schema['title'] = $this->translator->trans($form->getName(), [], $translationDomain);
-        }
+            $schema['title'] = $form->getName();//$this->translator->trans($form->getName(), [], $translationDomain);
+        }*/
 
         return $schema;
     }
@@ -162,6 +163,26 @@ abstract class AbstractTransformer implements TransformerInterface
             $schema['widget'] = $configWidget;
         }
 
+        $schema['widget']['ui:readonly'] = $this->isDisabled($form);
+
+        return $schema;
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param array         $schema
+     * @param mixed         $configWidget
+     *
+     * @return array
+     */
+    protected function addDependencies(FormInterface $form, array $schema)
+    {
+        if ($liform = $form->getConfig()->getOption('liform')) {
+            if (isset($liform['dependencies']) && $dependencies = $liform['dependencies']) {
+                $schema['dependencies'] = $dependencies;
+            }
+        }
+
         return $schema;
     }
 
@@ -173,5 +194,15 @@ abstract class AbstractTransformer implements TransformerInterface
     protected function isRequired(FormInterface $form)
     {
         return $form->getConfig()->getOption('required');
+    }
+
+    /**
+     * @param FormInterface $form
+     *
+     * @return boolean
+     */
+    protected function isDisabled(FormInterface $form)
+    {
+        return $form->getConfig()->getOption('disabled');
     }
 }

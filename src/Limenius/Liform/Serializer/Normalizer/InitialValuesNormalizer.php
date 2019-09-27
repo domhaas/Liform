@@ -77,7 +77,11 @@ class InitialValuesNormalizer implements NormalizerInterface
                 return $formView->vars['checked'];
             }
 
-            return $formView->vars['value'];
+            if (is_object($form->getNormData())) {
+                return $formView->vars['value'];
+            } else {
+                return $form->getNormData();
+            }
         }
     }
 

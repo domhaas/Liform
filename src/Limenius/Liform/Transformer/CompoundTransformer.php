@@ -68,6 +68,18 @@ class CompoundTransformer extends AbstractTransformer
             'properties' => $data,
         ];
 
+        /*if ($form->isRoot()) {
+            $schema['dependencies'] = [
+                'commandCenterId' => [
+                    'properties' => [
+                        'test123' => [
+                            'type' => 'texts'
+                        ]
+                    ]
+                ]
+            ];
+        }*/
+
         if (!empty($required)) {
             $schema['required'] = $required;
         }

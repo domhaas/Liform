@@ -32,11 +32,11 @@ class ChoiceTransformer extends AbstractTransformer
             if ($choiceView instanceof ChoiceGroupView) {
                 foreach ($choiceView->choices as $choiceItem) {
                     $choices[] = $choiceItem->value;
-                    $titles[] = $this->translator->trans($choiceItem->label);
+                    $titles[] = $choiceItem->label;//$this->translator->trans($choiceItem->label);
                 }
             } else {
                 $choices[] = $choiceView->value;
-                $titles[] = $this->translator->trans($choiceView->label);
+                $titles[] = $choiceView->label;//$this->translator->trans($choiceView->label);
             }
         }
 
@@ -57,7 +57,7 @@ class ChoiceTransformer extends AbstractTransformer
 
         $schema = [
             'enum' => $choices,
-            'enum_titles' => $titles,
+            'enumNames' => $titles,
             'type' => 'string',
         ];
 
@@ -76,7 +76,7 @@ class ChoiceTransformer extends AbstractTransformer
             'items' => [
                 'type' => 'string',
                 'enum' => $choices,
-                'enum_titles' => $titles,
+                'enumNames' => $titles,
             ],
             'minItems' => $this->isRequired($form) ? 1 : 0,
             'uniqueItems' => true,
