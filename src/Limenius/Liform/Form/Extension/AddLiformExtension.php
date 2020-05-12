@@ -39,6 +39,6 @@ class AddLiformExtension extends AbstractTypeExtension
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefined(['liform']);
+        $resolver->setDefined(['ui-schema']);
     }
 }

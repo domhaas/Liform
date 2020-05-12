@@ -68,6 +68,9 @@ abstract class AbstractTransformer implements TransformerInterface
     protected function addCommonSpecs(FormInterface $form, array $schema, $extensions = [], $widget)
     {
         //$schema = $this->addLabel($form, $schema);
+        $schema = $this->addType($form, $schema);
+        $schema = $this->addMetaData($form, $schema);
+        $schema = $this->addViewData($form, $schema);
         $schema = $this->addAttr($form, $schema);
         $schema = $this->addPattern($form, $schema);
         $schema = $this->addDescription($form, $schema);
@@ -137,7 +140,7 @@ abstract class AbstractTransformer implements TransformerInterface
      */
     protected function addDescription(FormInterface $form, array $schema)
     {
-        if ($liform = $form->getConfig()->getOption('liform')) {
+        if ($liform = $form->getConfig()->getOption('ui-schema')) {
             if (isset($liform['description']) && $description = $liform['description']) {
                 $schema['description'] = $this->translator->trans($description);
             }
@@ -153,17 +156,73 @@ abstract class AbstractTransformer implements TransformerInterface
      *
      * @return array
      */
+    protected function addViewData(FormInterface $form, array $schema)
+    {
+        if ($liform = $form->getConfig()->getOption('ui-schema')) {
+            if (isset($liform['view'])) {
+                $schema['view'] = $liform['view'];
+            }
+        }
+
+        return $schema;
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param array         $schema
+     * @param mixed         $configWidget
+     *
+     * @return array
+     */
+    protected function addType(FormInterface $form, array $schema)
+    {
+        if ($liform = $form->getConfig()->getOption('ui-schema')) {
+            if (isset($liform['type'])) {
+                $schema['type'] = $liform['type'];
+            }
+        }
+
+        return $schema;
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param array         $schema
+     * @param mixed         $configWidget
+     *
+     * @return array
+     */
+    protected function addMetaData(FormInterface $form, array $schema)
+    {
+        if ($this->isDisabled($form) === true) {
+            $schema['readOnly'] = true;
+        }
+
+        if ($liform = $form->getConfig()->getOption('ui-schema')) {
+            if (isset($liform['description'])) {
+                $schema['description'] = $liform['description'];
+            }
+        }
+
+        return $schema;
+    }
+
+    /**
+     * @param FormInterface $form
+     * @param array         $schema
+     * @param mixed         $configWidget
+     *
+     * @return array
+     */
     protected function addWidget(FormInterface $form, array $schema, $configWidget)
     {
-        if ($liform = $form->getConfig()->getOption('liform')) {
+        if ($liform = $form->getConfig()->getOption('ui-schema')) {
             if (isset($liform['widget']) && $widget = $liform['widget']) {
                 $schema['widget'] = $widget;
             }
         } elseif ($configWidget) {
             $schema['widget'] = $configWidget;
         }
-
-        $schema['widget']['ui:readonly'] = $this->isDisabled($form);
 
         return $schema;
     }
@@ -177,7 +236,7 @@ abstract class AbstractTransformer implements TransformerInterface
      */
     protected function addDependencies(FormInterface $form, array $schema)
     {
-        if ($liform = $form->getConfig()->getOption('liform')) {
+        if ($liform = $form->getConfig()->getOption('ui-schema')) {
             if (isset($liform['dependencies']) && $dependencies = $liform['dependencies']) {
                 $schema['dependencies'] = $dependencies;
             }
